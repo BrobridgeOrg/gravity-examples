@@ -1,0 +1,18 @@
+{
+  "name": "user-registration",
+  "version": "1.0.0",
+  "description": "user registration",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fred Chien <fred@brobridge.com>",
+  "license": "MIT",
+  "dependencies": {
+    "koa": "^2.11.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-router": "^8.0.8",
+    "node-fetch": "^2.6.0",
+    "node-nats-streaming": "^0.2.6"
+  }
+}
