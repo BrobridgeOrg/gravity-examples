@@ -24,7 +24,7 @@ sc.on('connect', async () => {
 	for (let i = 0; i < num; i++) {
 
 		let message = {
-			eventName: 'userDeleted',
+			event: 'userDeleted',
 			payload: {
 				id: i + 1,
 			}
