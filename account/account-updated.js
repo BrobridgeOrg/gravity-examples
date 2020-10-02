@@ -34,11 +34,11 @@ sc.on('connect', async () => {
 		let type = Math.floor(Math.random() * 2) + 1;
 
 		let message = {
-			event: 'accountCreated',
+			event: 'accountUpdated',
 			payload: {
 				id: i + 1,
 				idNum: id,
-				name: name,
+				name: name + "_updated",
 				phone: mobile,
 				address: address,
 				type: '0' + type.toString(),
