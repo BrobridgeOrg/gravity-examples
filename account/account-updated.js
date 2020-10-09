@@ -2,7 +2,7 @@ const stan = require('node-nats-streaming');
 const FakeDataGenerator = require('fake-data-generator-taiwan');
 
 const sc = stan.connect('test-cluster', 'example', '0.0.0.0:32803');
-const eventCount = 100;
+const eventCount = parseInt(process.argv[2], 10) || 100;
 
 const publish = (channel, message) => {
 	return new Promise((resolve, reject) => {
