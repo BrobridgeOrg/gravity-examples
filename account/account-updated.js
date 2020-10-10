@@ -1,13 +1,17 @@
-const stan = require('node-nats-streaming');
+const NATS = require('nats')
+//const stan = require('node-nats-streaming');
 const FakeDataGenerator = require('fake-data-generator-taiwan');
 
-const sc = stan.connect('test-cluster', 'example', '0.0.0.0:32803');
+const nc = NATS.connect({
+	servers: [ 'nats://0.0.0.0:32803' ]
+})
+//const sc = stan.connect('test-cluster', 'example', '0.0.0.0:32803');
 const eventCount = parseInt(process.argv[2], 10) || 100;
 
 const publish = (channel, message) => {
 	return new Promise((resolve, reject) => {
 
-		sc.publish(channel, JSON.stringify(message), (err, guid) => {
+		nc.publish(channel, JSON.stringify(message), (err, guid) => {
 			if (err) {
 				return reject(err);
 			}
@@ -18,7 +22,7 @@ const publish = (channel, message) => {
 	});
 };
 
-sc.on('connect', async () => {
+nc.on('connect', async () => {
 
 	let generator = new FakeDataGenerator();
 	let tasks = [];
@@ -48,18 +52,21 @@ sc.on('connect', async () => {
 			console.log('sending message:', message.payload.name);
 
 			// Publish event
-			let task = publish('example.accountevent', message);
-			tasks.push(task);
+			//let task = publish('example.accountevent', message);
+			//tasks.push(task);
+			nc.publish('example.accountevent', JSON.stringify(message))
 		} catch(e) {
 			console.log(e);
 		}
 	}
 
-	await Promise.all(tasks);
+//	await Promise.all(tasks);
 
-	sc.close();
+	nc.flush(function() {
+		nc.close();
+	});
 })
 
-sc.on('close', () => {
+nc.on('close', () => {
 	process.exit()
 })

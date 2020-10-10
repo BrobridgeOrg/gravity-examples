@@ -13,6 +13,7 @@
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^8.0.8",
+    "nats": "^1.4.12",
     "node-fetch": "^2.6.0",
     "node-nats-streaming": "^0.2.6"
   }
