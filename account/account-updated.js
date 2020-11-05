@@ -27,6 +27,8 @@ nc.on('connect', async () => {
 	let generator = new FakeDataGenerator();
 	let tasks = [];
 
+	console.log('Preparing data...');
+
 	// Simulate creating 100 user
 	for (let i = 0; i < eventCount; i++) {
 
@@ -48,21 +50,29 @@ nc.on('connect', async () => {
 				type: '0' + type.toString(),
 			}
 		}
-		try {
-			console.log('sending message:', message.payload.name);
+//		try {
+//			console.log('sending message:', message.payload.name);
 
 			// Publish event
 			//let task = publish('example.accountevent', message);
 			//tasks.push(task);
-			nc.publish('example.accountevent', JSON.stringify(message))
-		} catch(e) {
-			console.log(e);
-		}
+			//nc.publish('example.accountevent', JSON.stringify(message))
+			tasks.push(JSON.stringify(message))
+//		} catch(e) {
+//			console.log(e);
+//		}
 	}
+
+	console.log('Sending...');
+
+	tasks.forEach((data) => {
+		nc.publish('example.accountevent', data)
+	});
 
 //	await Promise.all(tasks);
 
 	nc.flush(function() {
+		console.log('Sent');
 		nc.close();
 	});
 })
