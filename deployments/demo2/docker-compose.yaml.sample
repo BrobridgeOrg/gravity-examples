@@ -138,7 +138,7 @@ services:
         {                
                 "subscriptions": {
                         "_@@COLLECTION_NAME@@_": [
-                                "_@@SRC_TABLE@@_"
+                                "_@@DEST_TABLE@@_"
                         ]
                 }        
         }
