@@ -128,7 +128,7 @@ services:
      hostname: gravity-transmitter-postgres
      restart: always
      environment:
-       GRAVITY_TRANSMITTER_POSTGRES_GRAVITY_HOST: 172.17.0.1:4223
+       GRAVITY_TRANSMITTER_POSTGRES_GRAVITY_HOST: 172.17.0.1:_@@PORT@@_
        GRAVITY_TRANSMITTER_POSTGRES_DATABASE_HOST: 172.17.0.1
        GRAVITY_TRANSMITTER_POSTGRES_DATABASE_PORT: 5432
        GRAVITY_TRANSMITTER_POSTGRES_DATABASE_USERNAME: postgres
@@ -138,7 +138,7 @@ services:
         {                
                 "subscriptions": {
                         "_@@COLLECTION_NAME@@_": [
-                                "_@@SRC_TABLE@@_"
+                                "_@@DEST_TABLE@@_"
                         ]
                 }        
         }
@@ -150,7 +150,7 @@ services:
      hostname: gravity-adapter-mysql
      environment:
        GRAVITY_ADAPTER_MYSQL_GRAVITY_HOST: 172.17.0.1
-       GRAVITY_ADAPTER_MYSQL_GRAVITY_PORT: 4223
+       GRAVITY_ADAPTER_MYSQL_GRAVITY_PORT: _@@PORT@@_
        GRAVITY_ADAPTER_MYSQL_SOURCE_SETTINGS: |
          {
               "sources": {
@@ -163,7 +163,7 @@ services:
                               "dbname": "gravity",
                               "initialLoad": true,
                               "tables": {
-                                      "products":{
+                                      "_@@SRC_TABLE@@_":{
                                               "events": {
                                                       "snapshot": "_@@EVENT_INIT@@_",
                                                       "create": "_@@EVENT_CREATE@@_",
