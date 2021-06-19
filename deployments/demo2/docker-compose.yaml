@@ -1,0 +1,177 @@
+version: '3'
+
+services:
+
+   # Gravity Core Components
+   internal-nats-server:
+     image: "nats:2.2.6"
+     restart: always
+     expose:
+     - "4222"
+     ports:
+       - "4223:4222"
+
+   gravity-controller:
+     image: "brobridgehub/gravity-controller:v2.0.0"
+     hostname: gravity-controller
+     restart: always
+     environment:
+     - GRAVITY_CONTROLLER_GRAVITY_HOST=internal-nats-server
+     - GRAVITY_CONTROLLER_GRAVITY_PORT=4222
+     depends_on:
+     - "internal-nats-server"
+
+   # Data Mapping Rules
+   gravity-synchronizer:
+     image: "brobridgehub/gravity-synchronizer:v4.0.0"
+     restart: always
+     hostname: gravity-synchronizer
+     environment:
+       GRAVITY_SYNCHRONIZER_GRAVITY_HOST: internal-nats-server
+       GRAVITY_SYNCHRONIZER_GRAVITY_PORT: 4222
+       GRAVITY_SYNCHRONIZER_RULES_SETTINGS: |
+         {
+          "rules": [
+            {
+              "event": "orderInitialized",
+              "collection": "orderData",
+              "method": "insert",
+              "primaryKey": "name",
+              "mapping": [
+                {
+                  "source": "name",
+                  "target": "name"
+                },
+                {
+                  "source": "catergory",
+                  "target": "catergory"
+                },
+                {
+                  "source": "quantity",
+                  "target": "quantity"
+                },
+                {
+                  "source": "warehouse",
+                  "target": "warehouse"
+                }
+              ]
+            },
+            {
+              "event": "orderCreated",
+              "collection": "orderData",
+              "method": "insert",
+              "primaryKey": "name",
+              "mapping": [
+                {
+                  "source": "name",
+                  "target": "name"
+                },
+                {
+                  "source": "catergory",
+                  "target": "catergory"
+                },
+                {
+                  "source": "quantity",
+                  "target": "quantity"
+                },
+                {
+                  "source": "warehouse",
+                  "target": "warehouse"
+                }
+              ]
+            },
+            {
+              "event": "orderUpdated",
+              "collection": "orderData",
+              "method": "update",
+              "primaryKey": "name",
+              "mapping": [
+                {
+                  "source": "name",
+                  "target": "name"
+                },
+                {
+                  "source": "catergory",
+                  "target": "catergory"
+                },
+                {
+                  "source": "quantity",
+                  "target": "quantity"
+                },
+                {
+                  "source": "warehouse",
+                  "target": "warehouse"
+                }
+              ]
+            },
+            {
+              "event": "orderDeleted",
+              "collection": "orderData",
+              "method": "delete",
+              "primaryKey": "name",
+              "mapping": [
+                {
+                  "source": "name",
+                  "target": "name"
+                }
+              ]
+            }
+          ]
+         }
+     depends_on:
+     - "gravity-controller"
+     - "internal-nats-server"
+
+   # Destination Settings
+   gravity-transmitter-postgres:
+     image: "brobridgehub/gravity-transmitter-postgres:v3.0.0"
+     hostname: gravity-transmitter-postgres
+     restart: always
+     environment:
+       GRAVITY_TRANSMITTER_POSTGRES_GRAVITY_HOST: 172.17.0.1:4223
+       GRAVITY_TRANSMITTER_POSTGRES_DATABASE_HOST: 172.17.0.1
+       GRAVITY_TRANSMITTER_POSTGRES_DATABASE_PORT: 5432
+       GRAVITY_TRANSMITTER_POSTGRES_DATABASE_USERNAME: postgres
+       GRAVITY_TRANSMITTER_POSTGRES_DATABASE_PASSWORD: 1qaz@WSX
+       GRAVITY_TRANSMITTER_POSTGRES_DATABASE_DBNAME: gravity
+       GRAVITY_TRANSMITTER_POSTGRES_SUBSCRIPTION_SETTINGS: |  
+        {                
+                "subscriptions": {
+                        "orderData": [
+                                "orders"
+                        ]
+                }        
+        }
+
+   # Data Source Settings
+   gravity-adapter-mysql:
+     image: "brobridgehub/gravity-adapter-mysql:v2.0.0"
+     restart: always
+     hostname: gravity-adapter-mysql
+     environment:
+       GRAVITY_ADAPTER_MYSQL_GRAVITY_HOST: 172.17.0.1
+       GRAVITY_ADAPTER_MYSQL_GRAVITY_PORT: 4223
+       GRAVITY_ADAPTER_MYSQL_SOURCE_SETTINGS: |
+         {
+              "sources": {
+                      "mysql_example": {
+                              "disabled": false,
+                              "host": "172.17.0.1",
+                              "port": 3306,
+                              "username": "root",
+                              "password": "1qaz@WSXROOT",
+                              "dbname": "gravity",
+                              "initialLoad": true,
+                              "tables": {
+                                      "products":{
+                                              "events": {
+                                                      "snapshot": "orderInitialized",
+                                                      "create": "orderCreated",
+                                                      "update": "orderUpdated",
+                                                      "delete": "orderDeleted"
+                                              }
+                                      }
+                              }
+                      }
+              }
+         }
