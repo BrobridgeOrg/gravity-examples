@@ -138,7 +138,7 @@ services:
         {                
                 "subscriptions": {
                         "orderData": [
-                                "orders"
+                                "inventory"
                         ]
                 }        
         }

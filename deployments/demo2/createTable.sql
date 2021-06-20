@@ -5,7 +5,7 @@ create table products(
   quantity INT
 );
 
-create table orders(
+create table inventory(
   name CHAR(80) primary key,
   category CHAR(80),
   warehouse CHAR(80),
